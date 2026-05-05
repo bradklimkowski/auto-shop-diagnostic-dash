@@ -1,0 +1,35 @@
+:root {
+  --bg: #0b1220;
+  --panel: #162235;
+  --text: #f4f8ff;
+  --accent: #f59e0b;
+  --good: #22c55e;
+  --bad: #ef4444;
+}
+* { box-sizing: border-box; }
+body { margin:0; font-family: Arial, Helvetica, sans-serif; background: linear-gradient(135deg,#05080f,#101b2c); color:var(--text); }
+.app { max-width:1000px; margin:0 auto; padding:1rem; }
+.hero,.panel { background:var(--panel); border:2px solid #345; border-radius:12px; padding:1rem; margin-bottom:1rem; }
+.hero { border-color: var(--accent); text-align:center; }
+.hidden { display:none; }
+.btn { padding:.8rem 1rem; border-radius:10px; border:2px solid #9fb3c8; font-weight:700; cursor:pointer; font-size:1rem; }
+.btn.primary { background:var(--accent); color:#2b1700; }
+.btn.danger { background:#7f1d1d; color:#fff; border-color:#ef4444; }
+select { padding:.7rem; border-radius:8px; font-size:1rem; }
+.start-controls { display:grid; gap:.6rem; max-width:460px; }
+.hud.top { display:grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap:.5rem; align-items:center; font-weight:700; }
+.urgent { color:#fcd34d; font-size:1.15rem; }
+.meters { display:grid; gap:.5rem; margin: .9rem 0; }
+progress { width:100%; height:20px; }
+.pill { display:inline-block; background:#1e3a5f; border:1px solid #6ea8e8; padding:.25rem .6rem; border-radius:999px; margin:0 .4rem .5rem 0; }
+.choices { display:grid; gap:.6rem; }
+.choice { text-align:left; background:#f8fafc; color:#111827; }
+.choice.correct { background:#dcfce7; border-color:var(--good); animation:pulse .25s linear 1; }
+.choice.incorrect { background:#fee2e2; border-color:var(--bad); }
+.feedback { margin-top:.8rem; min-height:3rem; border:1px solid #456; border-radius:8px; padding:.6rem; }
+.feedback.correct { border-color:var(--good); }
+.feedback.incorrect { border-color:var(--bad); }
+.share { background:#0b1424; border:1px dashed #6ea8e8; padding:.7rem; white-space:pre-wrap; }
+.actions { display:flex; gap:.5rem; flex-wrap:wrap; }
+@keyframes pulse { 0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)} }
+@media (max-width:800px){ .hud.top{grid-template-columns:1fr 1fr;} }

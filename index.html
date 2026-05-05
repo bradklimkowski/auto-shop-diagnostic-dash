@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Torque Rush: ASE G1 Garage Sprint</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <h1>Torque Rush: ASE G1 Garage Sprint</h1>
+      <p class="tagline">Fast Garage Arcade Review • Think, Test, Then Repair</p>
+    </header>
+
+    <section id="start-screen" class="panel">
+      <h2>Student Instructions</h2>
+      <p><strong>Goal:</strong> Keep your service lane moving by answering ASE G1-level questions before time runs out.</p>
+      <ul>
+        <li>Choose a <strong>Mode</strong> and a category (for Category Review).</li>
+        <li>Click <strong>Start Sprint</strong>.</li>
+        <li>Correct answers build <strong>Boost</strong>, <strong>Combo</strong>, and score XP.</li>
+        <li>Wrong answers add <strong>Damage</strong> and reset combo.</li>
+        <li><strong>Daily Garage Challenge</strong> gives the same question order for everyone that day.</li>
+        <li><strong>Survival Mode</strong> starts with 3 lives and ends early if lives reach 0.</li>
+        <li>Use <strong>End Round</strong> anytime to finish and view results.</li>
+        <li>At the end, use <strong>Copy Result</strong> to share your summary text.</li>
+      </ul>
+      <p><strong>Classroom expectations:</strong> Read fully, test before replacing parts, avoid random guessing, and use missed questions for review.</p>
+
+      <div class="start-controls">
+        <label for="mode-select">Game Mode</label>
+        <select id="mode-select">
+          <option value="mixed">Mixed Review</option>
+          <option value="category">Category Review</option>
+          <option value="daily">Daily Garage Challenge</option>
+          <option value="survival">Survival Mode</option>
+        </select>
+
+        <label for="category-select">Category (Category Review)</label>
+        <select id="category-select"></select>
+
+        <button id="start-btn" class="btn primary">Start Sprint</button>
+      </div>
+    </section>
+
+    <section id="game-screen" class="panel hidden">
+      <div class="hud top">
+        <div class="urgent">⏱ Time: <span id="time">60</span>s</div>
+        <div>XP: <span id="score">0</span></div>
+        <div>Combo: <span id="combo">0</span></div>
+        <div>Lives: <span id="lives">∞</span></div>
+        <button id="end-round-btn" class="btn danger">End Round</button>
+      </div>
+
+      <div class="meters">
+        <div><label>Boost</label><progress id="boost-meter" max="100" value="0"></progress></div>
+        <div><label>Damage</label><progress id="damage-meter" max="100" value="0"></progress></div>
+        <div><label>Garage Progress</label><progress id="progress-meter" max="100" value="0"></progress></div>
+      </div>
+
+      <p id="mode-label" class="pill"></p>
+      <p id="category-label" class="pill"></p>
+      <h2 id="question-text"></h2>
+      <div id="choices" class="choices"></div>
+      <div id="feedback" class="feedback" aria-live="polite"></div>
+      <button id="next-btn" class="btn hidden">Next Repair Step</button>
+    </section>
+
+    <section id="end-screen" class="panel hidden">
+      <h2>Sprint Complete</h2>
+      <p>Final XP: <strong id="final-score">0</strong></p>
+      <p>Accuracy: <strong id="final-accuracy">0%</strong></p>
+      <p>Correct: <strong id="final-correct">0</strong> / <strong id="final-attempted">0</strong></p>
+      <p>Best Combo: <strong id="final-best-combo">0</strong></p>
+      <p>Rank: <strong id="final-rank">Needs More Shop Time</strong></p>
+      <pre id="share-text" class="share"></pre>
+      <div class="actions">
+        <button id="copy-result-btn" class="btn">Copy Result</button>
+        <button id="play-again-btn" class="btn primary">Play Again</button>
+        <button id="change-category-btn" class="btn">Change Category</button>
+      </div>
+      <p id="copy-status"></p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
