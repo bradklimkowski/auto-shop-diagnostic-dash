@@ -1,13 +1,3 @@
-const ROUND_SECONDS = 60;
-const STREAK_BONUS = 75;
-
-const MODES = {
-  mixed: 'Mixed Review',
-  category: 'Category Review',
-  daily: 'Daily Garage Challenge',
-  survival: 'Survival Mode'
-};
-
 const questionBank = [
   { category: 'Shop Safety', prompt: 'Before raising a vehicle, your first step is to:', choices: ['Check lift points and balance', 'Rev engine to warm up', 'Remove spark plugs', 'Bleed brakes'], correct: 'Check lift points and balance', explanation: 'Correct lift placement prevents vehicle falls.', difficulty: 'Easy' },
   { category: 'Shop Safety', prompt: 'Best eye protection for grinding is:', choices: ['Face shield or safety glasses', 'Baseball cap', 'Shop rag', 'Latex gloves'], correct: 'Face shield or safety glasses', explanation: 'Grinding throws sparks and debris toward the face.', difficulty: 'Easy' },
@@ -60,300 +50,47 @@ const questionBank = [
   { category: 'DTC Basics', prompt: 'Best step after reading a code is:', choices: ['Look up info and verify concern', 'Replace first listed part', 'Disconnect battery overnight', 'Ignore if car starts'], correct: 'Look up info and verify concern', explanation: 'Code is a clue, not a parts list.', difficulty: 'Easy' }
 ];
 
+
+const ROUND_SECONDS = 60;
+const DECISION_SECONDS = 7;
+const FEEDBACK_DELAY = 1200;
+
+const MODE_LABELS = {arcade:'Arcade Sprint',daily:'Daily Service Challenge',survival:'Survival Run',category:'Category Practice'};
+
 const els = Object.fromEntries([
-  'start-screen',
-  'game-screen',
-  'end-screen',
-  'mode-select',
-  'category-select',
-  'start-btn',
-  'time',
-  'score',
-  'combo',
-  'lives',
-  'end-round-btn',
-  'boost-meter',
-  'damage-meter',
-  'progress-meter',
-  'mode-label',
-  'category-label',
-  'question-text',
-  'choices',
-  'feedback',
-  'next-btn',
-  'final-score',
-  'final-accuracy',
-  'final-correct',
-  'final-attempted',
-  'final-best-combo',
-  'final-rank',
-  'share-text',
-  'copy-result-btn',
-  'play-again-btn',
-  'change-category-btn',
-  'copy-status'
-].map(id => [id, document.getElementById(id)]));
+  'start-screen','game-screen','result-screen','mode-select','category-select','start-btn','round-timer','question-timer','xp','combo','status-label','status-value','boost-meter','progress-meter','mode-label','question-text','answer-lanes','feedback','end-round-btn','countdown','combo-callout','playfield','final-xp','final-accuracy','final-correct','final-attempted','final-combo','final-rank','final-mode','share-result','copy-result-btn','play-again-btn','change-mode-btn','copy-status'
+].map(id=>[id,document.getElementById(id)]));
 
-let state = {};
+const categories=[...new Set(questionBank.map(q=>q.category))];
+categories.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;els['category-select'].appendChild(o);});
 
-const categories = [...new Set(questionBank.map(q => q.category))];
+let state={};
+const shuffle=a=>[...a].sort(()=>Math.random()-0.5);
+function seededShuffle(array,seed){const r=[...array];let s=seed;for(let i=r.length-1;i>0;i--){s=(s*9301+49297)%233280;const j=Math.floor((s/233280)*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+const seedFromDate=()=>{const d=new Date();return Number(`${d.getUTCFullYear()}${String(d.getUTCMonth()+1).padStart(2,'0')}${String(d.getUTCDate()).padStart(2,'0')}`)};
 
-categories.forEach(category => {
-  const option = document.createElement('option');
-  option.value = category;
-  option.textContent = category;
-  els['category-select'].appendChild(option);
-});
+function pickPool(mode,cat){if(mode==='daily')return seededShuffle(questionBank,seedFromDate());if(mode==='category')return shuffle(questionBank.filter(q=>q.category===cat));return shuffle(questionBank);}
+function startGame(){const mode=els['mode-select'].value;const category=els['category-select'].value;state={mode,category,pool:pickPool(mode,category),xp:0,combo:0,bestCombo:0,correct:0,attempted:0,boost:0,damage:0,lives:mode==='survival'?3:null,idx:0,roundLeft:ROUND_SECONDS,qLeft:DECISION_SECONDS,accepting:false};els['start-screen'].classList.add('hidden');els['result-screen'].classList.add('hidden');els['game-screen'].classList.remove('hidden');els['mode-label'].textContent=`Mode: ${MODE_LABELS[mode]}`;beginCountdown();}
 
-function shuffle(array) {
-  return [...array].sort(() => Math.random() - 0.5);
-}
-
-function seededShuffle(array, seed) {
-  const result = [...array];
-  let currentSeed = seed;
-
-  for (let i = result.length - 1; i > 0; i -= 1) {
-    currentSeed = (currentSeed * 9301 + 49297) % 233280;
-    const j = Math.floor((currentSeed / 233280) * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-
-  return result;
-}
-
-function seedFromDate() {
-  const date = new Date();
-  return Number(`${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}${String(date.getUTCDate()).padStart(2, '0')}`);
-}
-
-function setupGame() {
-  const mode = els['mode-select'].value;
-  const category = els['category-select'].value;
-
-  let pool = questionBank;
-
-  if (mode === 'category') {
-    pool = questionBank.filter(q => q.category === category);
-  }
-
-  if (mode === 'daily') {
-    pool = seededShuffle(questionBank, seedFromDate()).slice(0, 20);
-  }
-
-  if (mode === 'mixed' || mode === 'survival') {
-    pool = shuffle(questionBank);
-  }
-
-  state = {
-    mode,
-    category,
-    pool,
-    index: 0,
-    score: 0,
-    correct: 0,
-    attempted: 0,
-    combo: 0,
-    bestCombo: 0,
-    boost: 0,
-    damage: 0,
-    timeLeft: ROUND_SECONDS,
-    lives: mode === 'survival' ? 3 : Infinity,
-    timer: null
-  };
-
-  els['start-screen'].classList.add('hidden');
-  els['end-screen'].classList.add('hidden');
-  els['game-screen'].classList.remove('hidden');
-
-  updateHud();
-
-  state.timer = setInterval(() => {
-    state.timeLeft -= 1;
-    updateHud();
-
-    if (state.timeLeft <= 0) {
-      endGame();
-    }
-  }, 1000);
-
-  showQuestion();
-}
-
-function updateHud() {
-  els.time.textContent = state.timeLeft;
-  els.score.textContent = state.score;
-  els.combo.textContent = state.combo;
-  els.lives.textContent = state.lives === Infinity ? '∞' : state.lives;
-  els['boost-meter'].value = Math.min(100, state.boost);
-  els['damage-meter'].value = Math.min(100, state.damage);
-
-  const progress = state.attempted ? Math.round((state.correct / state.attempted) * 100) : 0;
-  els['progress-meter'].value = progress;
-  els['mode-label'].textContent = `Mode: ${MODES[state.mode]}`;
-}
-
-function showQuestion() {
-  const question = state.pool[state.index % state.pool.length];
-  state.current = question;
-
-  els['category-label'].textContent = `${question.category} • ${question.difficulty}`;
-  els['question-text'].textContent = question.prompt;
-
-  const choices = shuffle(question.choices).map(choice => ({
-    text: choice,
-    isCorrect: choice === question.correct
-  }));
-
-  state.currentChoices = choices;
-
-  els.choices.innerHTML = '';
-  els.feedback.textContent = '';
-  els.feedback.className = 'feedback';
-  els['next-btn'].classList.add('hidden');
-
-  choices.forEach((choice, index) => {
-    const button = document.createElement('button');
-    button.className = 'btn choice';
-    button.textContent = choice.text;
-    button.onclick = () => answer(index, button);
-    els.choices.appendChild(button);
-  });
-}
-
-function answer(index, button) {
-  [...els.choices.children].forEach(choiceButton => {
-    choiceButton.disabled = true;
-  });
-
-  state.attempted += 1;
-
-  const chosen = state.currentChoices[index];
-
-  if (chosen.isCorrect) {
-    const gain = 100 + Math.min(50, state.combo * 5);
-    state.score += gain;
-    state.correct += 1;
-    state.combo += 1;
-    state.boost = Math.min(100, state.boost + 12 + state.combo);
-
-    if (state.combo % 3 === 0) {
-      state.score += STREAK_BONUS;
-    }
-
-    state.bestCombo = Math.max(state.bestCombo, state.combo);
-
-    button.classList.add('correct');
-    els.feedback.className = 'feedback correct';
-    els.feedback.innerHTML = `Correct! +${gain} XP<br>${state.current.explanation}`;
-  } else {
-    state.combo = 0;
-    state.damage = Math.min(100, state.damage + 18);
-
-    if (state.mode === 'survival') {
-      state.lives -= 1;
-
-      if (state.lives <= 0) {
-        els.feedback.className = 'feedback incorrect';
-        els.feedback.innerHTML = `Incorrect. ${state.current.explanation}<br>Out of lives.`;
-        updateHud();
-        return endGame();
-      }
-    }
-
-    button.classList.add('incorrect');
-
-    [...els.choices.children].forEach((choiceButton, choiceIndex) => {
-      if (state.currentChoices[choiceIndex].isCorrect) {
-        choiceButton.classList.add('correct');
-      }
-    });
-
-    els.feedback.className = 'feedback incorrect';
-    els.feedback.innerHTML = `Incorrect. ${state.current.explanation}`;
-  }
-
-  updateHud();
-  els['next-btn'].classList.remove('hidden');
-}
-
-function nextQuestion() {
-  state.index += 1;
-  showQuestion();
-}
-
-function rank(score, accuracy) {
-  if (score > 2200 && accuracy >= 85) return 'Master Tech in Training';
-  if (score > 1700 && accuracy >= 78) return 'Service Lane Pro';
-  if (score > 1300 && accuracy >= 70) return 'Diagnostic Rookie';
-  if (score > 900 && accuracy >= 62) return 'Lube Bay Legend';
-  if (score > 500 && accuracy >= 50) return 'Apprentice Tech';
-  return 'Needs More Shop Time';
-}
-
-function endGame() {
-  clearInterval(state.timer);
-
-  els['game-screen'].classList.add('hidden');
-  els['end-screen'].classList.remove('hidden');
-
-  const accuracy = state.attempted ? Math.round((state.correct / state.attempted) * 100) : 0;
-  const finalRank = rank(state.score, accuracy);
-
-  els['final-score'].textContent = state.score;
-  els['final-accuracy'].textContent = `${accuracy}%`;
-  els['final-correct'].textContent = state.correct;
-  els['final-attempted'].textContent = state.attempted;
-  els['final-best-combo'].textContent = state.bestCombo;
-  els['final-rank'].textContent = finalRank;
-
-  const modeText = state.mode === 'category'
-    ? `Category Review (${state.category})`
-    : MODES[state.mode];
-
-  const resultText = `Torque Rush: ASE G1 Garage Sprint
-Score: ${state.score}
-Accuracy: ${accuracy}%
+function beginCountdown(){els.countdown.classList.remove('hidden');let n=3;els.countdown.textContent=n;const t=setInterval(()=>{n--;els.countdown.textContent=n===0?'Go!':n;if(n<0){clearInterval(t);els.countdown.classList.add('hidden');startRoundTimers();nextQuestion();}},500);}
+function startRoundTimers(){state.roundTick=setInterval(()=>{state.roundLeft--;if(state.roundLeft<=0)endGame();updateHud();},1000);}
+function nextQuestion(){state.current=state.pool[state.idx%state.pool.length];state.idx++;state.qLeft=DECISION_SECONDS;state.answered=false;state.accepting=true;renderQuestion();state.qTick=setInterval(()=>{state.qLeft=Math.max(0,state.qLeft-0.1);if(state.qLeft<=0){clearInterval(state.qTick);handleAnswer(null,true);}updateHud();},100);updateHud();}
+function renderQuestion(){els['question-text'].textContent=state.current.prompt;els['answer-lanes'].innerHTML='';els.feedback.className='feedback';els.feedback.textContent='';els['combo-callout'].textContent='';const choices=shuffle(state.current.choices).slice(0,4).map(t=>({text:t,isCorrect:t===state.current.correct}));state.currentChoices=choices;choices.forEach((c,i)=>{const b=document.createElement('button');b.className=`lane-card lane-${i}`;b.textContent=`${i+1}. ${c.text}`;b.dataset.correct=c.isCorrect;b.style.animation=`fall ${DECISION_SECONDS}s linear forwards`;b.onclick=()=>handleAnswer(i,false);els['answer-lanes'].appendChild(b);});}
+function handleAnswer(i,timeout){if(!state.accepting)return;state.accepting=false;clearInterval(state.qTick);state.attempted++;const chosen=i===null?null:state.currentChoices[i];const correctChoice=state.currentChoices.find(c=>c.isCorrect);if(chosen&&chosen.isCorrect){const speed=Math.round((state.qLeft/DECISION_SECONDS)*50);let gain=100+speed;state.correct++;state.combo++;state.bestCombo=Math.max(state.bestCombo,state.combo);if(state.combo%3===0){gain+=75;els['combo-callout'].textContent=`Combo x${state.combo}`;}if(state.combo%5===0){els['combo-callout'].textContent='Boost! Perfect Service!';}
+state.xp+=gain;state.boost=Math.min(100,state.boost+10);els.feedback.className='feedback good correct-pop';els.feedback.textContent=`Correct! +${gain} XP. ${state.current.explanation}`;}
+else{state.combo=0;if(state.mode==='survival'){state.lives--;if(state.lives<=0){state.lives=0;}}
+else{state.damage=Math.min(100,state.damage+18);}els.playfield.classList.add('wrong-shake','flash-red');setTimeout(()=>els.playfield.classList.remove('wrong-shake','flash-red'),280);const prefix=timeout?'Timeout!':'Incorrect!';els.feedback.className='feedback bad';els.feedback.textContent=`${prefix} Correct lane: ${correctChoice.text}. ${state.current.explanation}`;}
+updateHud();if(state.mode==='survival'&&state.lives<=0){setTimeout(endGame,FEEDBACK_DELAY);return;}setTimeout(()=>{if(state.roundLeft>0)nextQuestion();},FEEDBACK_DELAY);}
+function updateHud(){els['round-timer'].textContent=state.roundLeft;els['question-timer'].textContent=state.qLeft.toFixed(1);els.xp.textContent=state.xp;els.combo.textContent=state.combo;if(state.mode==='survival'){els['status-label'].firstChild.textContent='Lives: ';els['status-value'].textContent=state.lives;}else{els['status-label'].firstChild.textContent='Damage: ';els['status-value'].textContent=`${state.damage}%`;}
+els['boost-meter'].value=state.boost;els['progress-meter'].value=state.attempted?Math.round((state.correct/state.attempted)*100):0;}
+function getRank(xp,acc){if(xp>=2200&&acc>=85)return'Master Tech in Training';if(xp>=1700&&acc>=78)return'Service Lane Pro';if(xp>=1300&&acc>=70)return'Diagnostic Rookie';if(xp>=900&&acc>=62)return'Lube Bay Legend';if(xp>=500&&acc>=50)return'Apprentice Tech';return'Needs More Shop Time';}
+function endGame(){clearInterval(state.roundTick);clearInterval(state.qTick);els['game-screen'].classList.add('hidden');els['result-screen'].classList.remove('hidden');const acc=state.attempted?Math.round((state.correct/state.attempted)*100):0;const rank=getRank(state.xp,acc);els['final-xp'].textContent=state.xp;els['final-accuracy'].textContent=`${acc}%`;els['final-correct'].textContent=state.correct;els['final-attempted'].textContent=state.attempted;els['final-combo'].textContent=state.bestCombo;els['final-rank'].textContent=rank;els['final-mode'].textContent=MODE_LABELS[state.mode];const share=`Torque Rush: Service Lane Sprint
+XP: ${state.xp}
+Accuracy: ${acc}%
 Best Combo: ${state.bestCombo}
-Rank: ${finalRank}
-Mode: ${modeText}
-Time: ${ROUND_SECONDS} sec`;
+Rank: ${rank}
+Mode: ${MODE_LABELS[state.mode]}`;els['share-result'].textContent=share;state.share=share;}
 
-  els['share-text'].textContent = resultText;
-  state.share = resultText;
-}
-
-async function copyResult() {
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(state.share);
-      els['copy-status'].textContent = 'Result copied!';
-    } else {
-      throw new Error('Clipboard unavailable');
-    }
-  } catch {
-    const textarea = document.createElement('textarea');
-    textarea.value = state.share;
-    document.body.appendChild(textarea);
-    textarea.select();
-
-    try {
-      document.execCommand('copy');
-      els['copy-status'].textContent = 'Result copied with fallback copy.';
-    } catch {
-      els['copy-status'].textContent = 'Copy blocked. Select and copy the text manually.';
-    }
-
-    textarea.remove();
-  }
-}
-
-els['start-btn'].onclick = setupGame;
-els['next-btn'].onclick = nextQuestion;
-els['end-round-btn'].onclick = endGame;
-els['play-again-btn'].onclick = setupGame;
-els['change-category-btn'].onclick = () => {
-  els['end-screen'].classList.add('hidden');
-  els['start-screen'].classList.remove('hidden');
-};
-els['copy-result-btn'].onclick = copyResult;
+els['start-btn'].onclick=startGame;els['end-round-btn'].onclick=endGame;els['play-again-btn'].onclick=startGame;els['change-mode-btn'].onclick=()=>{els['result-screen'].classList.add('hidden');els['start-screen'].classList.remove('hidden');};
+els['copy-result-btn'].onclick=async()=>{try{await navigator.clipboard.writeText(state.share||'');els['copy-status'].textContent='Result copied!';}catch{els['copy-status'].textContent='Copy blocked. Select and copy manually from the result box.';}};
+document.addEventListener('keydown',e=>{const keys=['1','2','3','4'];if(keys.includes(e.key)){const i=Number(e.key)-1;handleAnswer(i,false);}if(['ArrowLeft','ArrowUp'].includes(e.key))handleAnswer(0,false);if(['ArrowRight','ArrowDown'].includes(e.key))handleAnswer(1,false);});
