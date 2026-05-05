@@ -1,0 +1,126 @@
+:root {
+  --bg: #0f1720;
+  --panel: #1a2533;
+  --panel-alt: #25364a;
+  --text: #f4f7fb;
+  --accent: #f59e0b;
+  --good: #22c55e;
+  --bad: #ef4444;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(145deg, #0b1118, #111c29);
+  color: var(--text);
+}
+
+.app {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.hero {
+  text-align: center;
+  background: var(--panel-alt);
+  padding: 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.tagline { margin: 0.25rem 0 0; font-weight: 700; }
+
+.panel {
+  background: var(--panel);
+  border: 2px solid #3d526b;
+  border-radius: 12px;
+  padding: 1.1rem;
+}
+
+.hidden { display: none; }
+
+h1, h2, h3 { margin-top: 0.4rem; }
+li, p { line-height: 1.45; }
+
+.start-controls {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+select, .btn {
+  font-size: 1.05rem;
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: 2px solid #9fb3c8;
+}
+
+.btn {
+  cursor: pointer;
+  font-weight: 700;
+  background: #dbe7f4;
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: #fcd34d;
+  color: #2b1700;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: #101926;
+  padding: 0.75rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.question-wrap { margin-bottom: 1rem; }
+.category-pill {
+  display: inline-block;
+  background: #1e3a5f;
+  border: 1px solid #6ea8e8;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-weight: 700;
+}
+
+.choices {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.choice {
+  text-align: left;
+  background: #f8fafc;
+  color: #0f1720;
+  border: 2px solid #9db5cf;
+}
+
+.choice.correct { border-color: var(--good); background: #dcfce7; }
+.choice.incorrect { border-color: var(--bad); background: #fee2e2; }
+
+.feedback {
+  min-height: 3rem;
+  padding: 0.7rem;
+  border-radius: 8px;
+  background: #0c1521;
+  border: 1px solid #32475d;
+  margin-bottom: 0.8rem;
+}
+
+.feedback.correct { border-color: var(--good); }
+.feedback.incorrect { border-color: var(--bad); }
+
+.performance { font-size: 1.15rem; font-weight: 700; color: #fcd34d; }
+
+@media (max-width: 640px) {
+  .hud { flex-direction: column; }
+}
