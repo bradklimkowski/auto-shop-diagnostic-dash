@@ -1,70 +1,49 @@
 # Torque Rush: ASE G1 Garage Sprint
 
 ## Short description
-A Chromebook-friendly, no-login, no-backend automotive arcade review game for high school students. Players answer ASE G1-level questions in fast timed rounds, building Boost and Combo while avoiding Damage.
+
+Torque Rush: ASE G1 Garage Sprint is a Chromebook-friendly, no-login, no-backend automotive arcade review game for high school students. Players answer ASE G1-level automotive maintenance and light repair questions in fast timed rounds while building Boost and Combo and avoiding Damage.
+
+The game is built with plain HTML, CSS, and JavaScript. It is designed to run directly in the browser and deploy easily with GitHub Pages.
 
 ## Run locally
+
 1. Download or clone the repo.
 2. Open `index.html` directly in a browser.
-3. Click **Start Sprint**.
+3. Choose a mode.
+4. Choose a category if using Category Review.
+5. Click **Start Sprint**.
+
+No install, login, database, or server is required.
 
 ## Deploy with GitHub Pages
-1. Go to your GitHub repo.
-2. Open **Settings** → **Pages**.
-3. Under **Build and deployment**, choose **Deploy from a branch**.
-4. Select branch: **main**.
-5. Select folder: **/root**.
-6. Save and use the generated Pages URL.
+
+1. Go to the GitHub repo.
+2. Open **Settings**.
+3. Open **Pages**.
+4. Under **Build and deployment**, choose **Deploy from a branch**.
+5. Select branch: **main**.
+6. Select folder: **/root**.
+7. Click **Save**.
+8. Use the generated GitHub Pages URL.
 
 ## Edit questions
-- Open `script.js` and edit `questionBank`.
-- Each question uses:
-  - `category`
-  - `prompt`
-  - `choices`
-  - `correct` (answer text)
-  - `explanation`
-  - `difficulty`
 
-## How answer randomization works
-- Choices are shuffled each time a question appears.
-- Correctness is tracked by matching choice text against the `correct` value.
+Open `script.js` and edit the `questionBank` array.
 
-## Change timer length
-- In `script.js`, edit `ROUND_SECONDS`.
+Each question uses this format:
 
-## Add categories
-- Add questions with a new `category` name.
-- Category dropdown is generated automatically.
-
-## Daily Garage Challenge
-- Choose **Daily Garage Challenge** mode.
-- The game uses a date-based deterministic seed so all users that day get the same question order.
-
-## Survival Mode
-- Starts with 3 lives.
-- Wrong answers remove a life.
-- Round ends when lives reach 0 or time runs out.
-
-## Student instructions (in app)
-Students should:
-- Choose a mode.
-- Read and answer quickly but carefully.
-- Build Boost and Combo with correct answers.
-- Avoid Damage from incorrect answers.
-- Use results to review weak topics.
-
-## Teacher notes
-- Great for warm-ups, station rotation, and review days.
-- Use Category mode for targeted reteach.
-- Use Daily challenge for shared class competition.
-
-## Chromebook testing checklist
-- [ ] Opens by launching `index.html`.
-- [ ] Mixed Review works.
-- [ ] Category Review works.
-- [ ] Daily Garage Challenge gives consistent order on same date.
-- [ ] Survival Mode ends when lives are gone.
-- [ ] End Round button works.
-- [ ] Copy Result works (or shows fallback message).
-- [ ] No login or install required.
+```js
+{
+  category: "Batteries",
+  prompt: "A battery reads 12.6 volts with the key off. What does this usually indicate?",
+  choices: [
+    "The battery is near fully charged",
+    "The alternator has failed",
+    "The starter is shorted",
+    "The coolant level is low"
+  ],
+  correct: "The battery is near fully charged",
+  explanation: "A fully charged 12-volt lead-acid battery is usually around 12.6 volts with the key off.",
+  difficulty: "Easy"
+}

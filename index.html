@@ -16,8 +16,9 @@
     <section id="start-screen" class="panel">
       <h2>Student Instructions</h2>
       <p><strong>Goal:</strong> Keep your service lane moving by answering ASE G1-level questions before time runs out.</p>
+
       <ul>
-        <li>Choose a <strong>Mode</strong> and a category (for Category Review).</li>
+        <li>Choose a <strong>Mode</strong> and a category when needed.</li>
         <li>Click <strong>Start Sprint</strong>.</li>
         <li>Correct answers build <strong>Boost</strong>, <strong>Combo</strong>, and score XP.</li>
         <li>Wrong answers add <strong>Damage</strong> and reset combo.</li>
@@ -26,6 +27,7 @@
         <li>Use <strong>End Round</strong> anytime to finish and view results.</li>
         <li>At the end, use <strong>Copy Result</strong> to share your summary text.</li>
       </ul>
+
       <p><strong>Classroom expectations:</strong> Read fully, test before replacing parts, avoid random guessing, and use missed questions for review.</p>
 
       <div class="start-controls">
@@ -37,7 +39,7 @@
           <option value="survival">Survival Mode</option>
         </select>
 
-        <label for="category-select">Category (Category Review)</label>
+        <label for="category-select">Category for Category Review</label>
         <select id="category-select"></select>
 
         <button id="start-btn" class="btn primary">Start Sprint</button>
@@ -46,7 +48,7 @@
 
     <section id="game-screen" class="panel hidden">
       <div class="hud top">
-        <div class="urgent">⏱ Time: <span id="time">60</span>s</div>
+        <div class="urgent">Time: <span id="time">60</span>s</div>
         <div>XP: <span id="score">0</span></div>
         <div>Combo: <span id="combo">0</span></div>
         <div>Lives: <span id="lives">∞</span></div>
@@ -54,32 +56,49 @@
       </div>
 
       <div class="meters">
-        <div><label>Boost</label><progress id="boost-meter" max="100" value="0"></progress></div>
-        <div><label>Damage</label><progress id="damage-meter" max="100" value="0"></progress></div>
-        <div><label>Garage Progress</label><progress id="progress-meter" max="100" value="0"></progress></div>
+        <div>
+          <label for="boost-meter">Boost</label>
+          <progress id="boost-meter" max="100" value="0"></progress>
+        </div>
+
+        <div>
+          <label for="damage-meter">Damage</label>
+          <progress id="damage-meter" max="100" value="0"></progress>
+        </div>
+
+        <div>
+          <label for="progress-meter">Garage Progress</label>
+          <progress id="progress-meter" max="100" value="0"></progress>
+        </div>
       </div>
 
       <p id="mode-label" class="pill"></p>
       <p id="category-label" class="pill"></p>
+
       <h2 id="question-text"></h2>
       <div id="choices" class="choices"></div>
+
       <div id="feedback" class="feedback" aria-live="polite"></div>
       <button id="next-btn" class="btn hidden">Next Repair Step</button>
     </section>
 
     <section id="end-screen" class="panel hidden">
       <h2>Sprint Complete</h2>
+
       <p>Final XP: <strong id="final-score">0</strong></p>
       <p>Accuracy: <strong id="final-accuracy">0%</strong></p>
       <p>Correct: <strong id="final-correct">0</strong> / <strong id="final-attempted">0</strong></p>
       <p>Best Combo: <strong id="final-best-combo">0</strong></p>
       <p>Rank: <strong id="final-rank">Needs More Shop Time</strong></p>
+
       <pre id="share-text" class="share"></pre>
+
       <div class="actions">
         <button id="copy-result-btn" class="btn">Copy Result</button>
         <button id="play-again-btn" class="btn primary">Play Again</button>
         <button id="change-category-btn" class="btn">Change Category</button>
       </div>
+
       <p id="copy-status"></p>
     </section>
   </main>
