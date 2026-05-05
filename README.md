@@ -1,49 +1,63 @@
-# Torque Rush: ASE G1 Garage Sprint
+# Torque Rush: Service Lane Sprint
 
-## Short description
-
-Torque Rush: ASE G1 Garage Sprint is a Chromebook-friendly, no-login, no-backend automotive arcade review game for high school students. Players answer ASE G1-level automotive maintenance and light repair questions in fast timed rounds while building Boost and Combo and avoiding Damage.
-
-The game is built with plain HTML, CSS, and JavaScript. It is designed to run directly in the browser and deploy easily with GitHub Pages.
+Torque Rush: Service Lane Sprint is a fast, school-appropriate lane-based arcade learning game for ASE G1 / maintenance fundamentals. Students pick the correct service lane card before the vehicle reaches the decision zone.
 
 ## Run locally
+1. Download or clone this repository.
+2. Open `index.html` directly in a browser (no server required).
+3. Select mode and start.
 
-1. Download or clone the repo.
-2. Open `index.html` directly in a browser.
-3. Choose a mode.
-4. Choose a category if using Category Review.
-5. Click **Start Sprint**.
-
-No install, login, database, or server is required.
-
-## Deploy with GitHub Pages
-
-1. Go to the GitHub repo.
-2. Open **Settings**.
-3. Open **Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select branch: **main**.
-6. Select folder: **/root**.
-7. Click **Save**.
-8. Use the generated GitHub Pages URL.
+## Deploy on GitHub Pages
+1. Push this repository to GitHub.
+2. In **Settings → Pages**, choose **Deploy from a branch**.
+3. Select your branch and `/ (root)`.
+4. Save and open the published URL.
 
 ## Edit questions
+Questions are in `script.js` in `questionBank`.
+Each entry uses editable text fields:
+- `category`
+- `prompt`
+- `choices` (3–4 options supported)
+- `correct` (must match the exact correct choice text)
+- `explanation`
+- `difficulty`
 
-Open `script.js` and edit the `questionBank` array.
+## Answer randomization
+Each question shuffles answer text before rendering lane cards. The card stores `isCorrect` by text comparison to `correct`, so the correct lane is not fixed.
 
-Each question uses this format:
+## Game modes
+- **Arcade Sprint**: 60s, wrong answers add damage.
+- **Daily Service Challenge**: date-seeded deterministic question order.
+- **Survival Run**: starts at 3 lives; wrong/timeout removes a life.
+- **Category Practice**: 60s, filtered to one selected category.
 
-```js
-{
-  category: "Batteries",
-  prompt: "A battery reads 12.6 volts with the key off. What does this usually indicate?",
-  choices: [
-    "The battery is near fully charged",
-    "The alternator has failed",
-    "The starter is shorted",
-    "The coolant level is low"
-  ],
-  correct: "The battery is near fully charged",
-  explanation: "A fully charged 12-volt lead-acid battery is usually around 12.6 volts with the key off.",
-  difficulty: "Easy"
-}
+## Chromebook test checklist
+- Open `index.html` directly in Chrome.
+- Verify touchpad click/tap lane selection.
+- Verify keyboard controls (`1-4`, arrow keys).
+- Verify timers, combo, XP, feedback, and restart flow.
+- Verify copy-result works (or fallback message appears).
+
+## Teacher usage ideas
+- Bell-ringer warmup (2–4 rounds)
+- Exit ticket with screenshot or copied result
+- Category remediation stations
+- Daily challenge leaderboard by class period
+
+## Student instructions
+1. Read the question at top.
+2. Click/tap the correct lane card before timer expires.
+3. Build combo for bonus XP.
+4. Avoid damage (or preserve lives in Survival).
+5. Copy and submit your result summary when done.
+
+## Verification
+Run the lightweight verification script from the repo root:
+
+```bash
+./verify.sh
+```
+
+This checks merge markers, JavaScript syntax, ID consistency between `script.js` and `index.html`, question count, and legacy `answer: 0` patterns.
+
