@@ -14,7 +14,7 @@
 .lane-card:hover{transform:scale(1.02)}.lane-0{left:2%}.lane-1{left:27%}.lane-2{left:52%}.lane-3{left:77%}
 .player-car{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:2rem}
 .feedback{min-height:2.2rem;margin:.6rem 0;padding:.5rem;border-radius:8px;background:#0d1728}.feedback.good{border:1px solid var(--good)}.feedback.bad{border:1px solid var(--bad)}
-.callout{height:1.4rem;color:#ffd27c;font-weight:700}.countdown{position:absolute;inset:0;display:grid;place-items:center;font-size:4rem;background:#091120d9;z-index:4}
+.callout{height:1.4rem;color:#ffd27c;font-weight:700}.countdown{position:absolute;inset:0;display:grid;place-items:center;font-size:4rem;background:#091120d9;z-index:4}.countdown.hidden{display:none}
 .correct-pop{animation:pop .3s}.wrong-shake{animation:shake .28s}.flash-red{animation:flash .3s}.share{background:#0c172a;padding:.7rem;border-radius:8px;white-space:pre-wrap}
 .actions{display:flex;gap:.5rem;flex-wrap:wrap}
 @keyframes pop{50%{transform:scale(1.12)}} @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}} @keyframes flash{from{background:#5c1111}to{background:transparent}}
