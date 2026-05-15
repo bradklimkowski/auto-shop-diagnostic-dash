@@ -52,7 +52,7 @@ const questionBank = [
 
 
 const ROUND_SECONDS = 60;
-const DECISION_SECONDS = 7;
+const DECISION_SECONDS = 14;
 const FEEDBACK_DELAY = 1200;
 
 const MODE_LABELS = {arcade:'Arcade Sprint',daily:'Daily Service Challenge',survival:'Survival Run',category:'Category Practice'};
